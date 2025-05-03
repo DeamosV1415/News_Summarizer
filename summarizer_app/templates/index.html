@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI News Summarizer</title>
+    {% load static %}
+    <style>
+      :root {
+        --primary-color: #2c3e50;
+        --accent-color: #3498db;
+        --background-color: #f8f9fa;
+        --card-background: #ffffff;
+        --text-color: #333333;
+        --secondary-text: #6c757d;
+        --border-color: #eaeaea;
+        --hover-color: #f1f7fc;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+          "Helvetica Neue", sans-serif;
+      }
+
+      body {
+        background-color: var(--background-color);
+        color: var(--text-color);
+        line-height: 1.6;
+        padding: 0;
+        margin: 0;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      header {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 30px 0;
+        margin-bottom: 30px;
+        box-shadow: var(--shadow);
+      }
+
+      .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      h1 {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 0;
+        position: relative;
+      }
+
+      h1::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -8px;
+        width: 80px;
+        height: 4px;
+        background-color: var(--accent-color);
+        border-radius: 2px;
+      }
+
+      .date {
+        font-size: 16px;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .news-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 25px;
+      }
+
+      .news-card {
+        background-color: var(--card-background);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--border-color);
+      }
+
+      .news-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+      }
+
+      .card-header {
+        background-color: var(--primary-color);
+        padding: 12px 20px;
+        position: relative;
+      }
+
+      .card-title {
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1.4;
+        margin-bottom: 0;
+      }
+
+      .card-title a {
+        color: white;
+        text-decoration: none;
+      }
+
+      .card-title a:hover {
+        text-decoration: underline;
+      }
+
+      .card-body {
+        padding: 20px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .news-summary {
+        color: var(--text-color);
+        margin-bottom: 15px;
+        font-size: 15px;
+        line-height: 1.6;
+        flex-grow: 1;
+      }
+
+      .source {
+        color: var(--secondary-text);
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        border-top: 1px solid var(--border-color);
+        padding-top: 12px;
+        margin-top: 10px;
+        font-style: italic;
+      }
+
+      .source::before {
+        content: "";
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        background-color: var(--accent-color);
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3Cline x1='2' y1='12' x2='22' y2='12'%3E%3C/line%3E%3Cpath d='M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        margin-right: 6px;
+      }
+
+      footer {
+        margin-top: 40px;
+        text-align: center;
+        padding: 20px;
+        color: var(--secondary-text);
+        font-size: 14px;
+        border-top: 1px solid var(--border-color);
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .header-content {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .date {
+          margin-top: 10px;
+        }
+
+        .news-container {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          font-size: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-content">
+        <h1>Top News Summaries</h1>
+        <div class="date">{% now "l, F j, Y" %}</div>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="news-container">
+        {% for article in articles %}
+        <article class="news-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <a href="{{ article.url }}" target="_blank"
+                >{{ article.title }}</a
+              >
+            </h2>
+          </div>
+          <div class="card-body">
+            <p class="news-summary">{{ article.summary }}</p>
+            <div class="source">Source: {{ article.source }}</div>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+
+    <footer>
+      <p>© {% now "Y" %} AI News Summarizer | Updated hourly</p>
+    </footer>
+  </body>
+</html>
