@@ -7,7 +7,7 @@ def home(request):
     url = (
     "https://newsapi.org/v2/top-headlines"
     "?country=us"
-    "&pageSize=10"      
+    "&pageSize=30"      
     f"&apiKey={NEWS_API_KEY}"
 )
     response = requests.get(url)
